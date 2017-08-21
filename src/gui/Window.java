@@ -17,11 +17,10 @@ public class Window extends JPanel implements KeyListener {
 	private final String VERSION = "1.1.0";
 	
 	private final Dimension WINDOW_SIZE = new Dimension(290, 290);
-	private final int MAX_WIDTH = 300;
-	private final int MAX_HEIGHT = 300;
+	public static final int CANVAS_WIDTH = 300;
+	public static final int CANVAS_HEIGHT = 300;
 	
 	private Game game;
-	private Canvas canvas;
 	
 	public Window() {
 		JFrame frame = new JFrame(TITLE + " v" + VERSION);
@@ -31,8 +30,8 @@ public class Window extends JPanel implements KeyListener {
 		panel.setPreferredSize(WINDOW_SIZE);
 		panel.setLayout(null);
 		
-		canvas = new Canvas();
-		canvas.setBounds(0, 0, MAX_WIDTH, MAX_HEIGHT);
+		Canvas canvas = new Canvas();
+		canvas.setBounds(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 		canvas.setIgnoreRepaint(true);
 		
 		panel.add(canvas);

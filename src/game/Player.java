@@ -8,11 +8,17 @@ public class Player {
 		movingLeft = false; 
 		movingRight = false;
 		inAir = false;
+		coins = 0;
 	}
 	
 	public Player(int w, int h) {
 		this();
 		width = w;
 		height = h;
+	}
+	
+	public void setPosition(int x, int y) {
+		xPos = x;
+		yPos = y;
 	}
 }
