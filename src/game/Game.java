@@ -13,6 +13,7 @@ public class Game implements Runnable {
 	boolean running = true;
 	static Player player1;
 	static int ticks;
+	Render render;
 	
 	// Player Momentum
 	static boolean playerRight;
@@ -22,7 +23,7 @@ public class Game implements Runnable {
 	static double playerXMomentum;
 	static double playerYMomentum;
 	
-	public static void setUp(Canvas can) {
+	public Game(Canvas can) {
 		// Allows for access to canvas variables
 		canvas = can;
 		
@@ -42,17 +43,19 @@ public class Game implements Runnable {
 		playerXMomentum = 0;
 		playerYMomentum = 0;
 		ticks = 0;
+		
+		render = new Render(canvas);
 	}
 	
 	public void run() {     
-		while(running) {
+		while (running) {
 			rendering();
 			update();
 			ticks += 1;
+			
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -71,7 +74,6 @@ public class Game implements Runnable {
 		} 
 		
 		if (startJump) {
-			System.out.println("trying to jump");
 			playerYMomentum = -5;
 			inAir = true;
 			startJump = false;
@@ -116,7 +118,6 @@ public class Game implements Runnable {
 	}
 
 	public static void keyPressed(int keycode) {
-		System.out.println("keyPressed sent to game class");
 		if (keycode == KeyEvent.VK_W) {
 			// Jump
 			if (!inAir) {
@@ -134,7 +135,6 @@ public class Game implements Runnable {
 	}
 	
 	public static void keyReleased(int keycode) {
-		// TODO Auto-generated method stub
 		if (keycode == KeyEvent.VK_W) {
 			// Jump
 		} if (keycode == KeyEvent.VK_S) {

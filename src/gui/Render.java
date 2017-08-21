@@ -8,11 +8,9 @@ public class Render {
 	static Canvas canvas;
 	static BufferStrategy bufferStrategy;
 	
-	public static void setUp(Canvas can, BufferStrategy buffStrat) {
+	public Render(Canvas can) {
 		canvas = can;
-		System.out.println(canvas);
-		bufferStrategy = buffStrat;
-		System.out.println(bufferStrategy);
+		bufferStrategy = canvas.getBufferStrategy();
 	}
 	
 	public static void render(int x, int y, int w, int h) {
