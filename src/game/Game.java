@@ -9,11 +9,11 @@ import java.awt.event.KeyEvent;
 public class Game implements Runnable {
 	
 	// Engine Variables
-	static Canvas canvas;
-	boolean running = true;
-	static Player player1;
-	static int ticks;
-	Render render;
+	private Canvas canvas;
+	private boolean running = true;
+	private Player player1;
+	private int ticks;
+	private Render render;
 	
 	// Player Momentum
 	static boolean playerRight;
@@ -82,10 +82,8 @@ public class Game implements Runnable {
 		// FizX by nuclearpheasant
 		if (ticks % 12 == 0) {
 			if (playerXMomentum > 0) {
-				System.out.println("slowing on the positive side");
 				playerXMomentum -= 1;
 			} if (playerXMomentum < 0) {
-				System.out.println("slowing on the negative side");
 				playerXMomentum += 1;
 			}
 		} if (player1.yPos < canvas.getHeight() - player1.height) {
@@ -114,10 +112,10 @@ public class Game implements Runnable {
 	   
 	public void rendering() {
 		// Renders the Player
-		Render.render(player1.xPos, player1.yPos, player1.width, player1.height);
+		render.render(player1.xPos, player1.yPos, player1.width, player1.height);
 	}
 
-	public static void keyPressed(int keycode) {
+	public void keyPressed(int keycode) {
 		if (keycode == KeyEvent.VK_W) {
 			// Jump
 			if (!inAir) {
@@ -134,7 +132,7 @@ public class Game implements Runnable {
 		}
 	}
 	
-	public static void keyReleased(int keycode) {
+	public void keyReleased(int keycode) {
 		if (keycode == KeyEvent.VK_W) {
 			// Jump
 		} if (keycode == KeyEvent.VK_S) {

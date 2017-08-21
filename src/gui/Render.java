@@ -5,28 +5,33 @@ import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 
 public class Render {
-	static Canvas canvas;
-	static BufferStrategy bufferStrategy;
+	private Canvas canvas;
+	private BufferStrategy bufferStrategy;
+	Graphics2D graphics;
 	
 	public Render(Canvas can) {
 		canvas = can;
 		bufferStrategy = canvas.getBufferStrategy();
 	}
 	
-	public static void render(int x, int y, int w, int h) {
-		Graphics2D g = (Graphics2D) bufferStrategy.getDrawGraphics();
-		g.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
-		renderBorder(g);
-		render(g, x, y, w, h);
-		g.dispose();
+	public void render(int x, int y, int w, int h) {
+		updateGraphicsInstance();
+		clear();
+		renderBorder();
+		graphics.fillRect(x, y, w, h);
+		graphics.dispose();
 		bufferStrategy.show();
 	}
 	
-	protected static void render(Graphics2D g, int xPosition, int yPosition, int width, int height) {
-		g.fillRect(xPosition, yPosition, width, height);
+	private void updateGraphicsInstance() {
+		graphics = (Graphics2D)bufferStrategy.getDrawGraphics();
 	}
 	
-	protected static void renderBorder(Graphics2D g) {
-		g.drawRect(0, 0, canvas.getWidth() - 1, canvas.getHeight() - 1);
+	private void clear() {
+		graphics.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
+	}
+	
+	private void renderBorder() {
+		graphics.drawRect(0, 0, canvas.getWidth() - 1, canvas.getHeight() - 1);
 	}
 }
