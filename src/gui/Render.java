@@ -4,6 +4,8 @@ import java.awt.Canvas;
 import java.awt.Graphics2D;
 import java.awt.image.BufferStrategy;
 
+import game.Player;
+
 public class Render {
 	private Canvas canvas;
 	private BufferStrategy bufferStrategy;
@@ -14,7 +16,11 @@ public class Render {
 		bufferStrategy = canvas.getBufferStrategy();
 	}
 	
-	public void render(int x, int y, int w, int h) {
+	public void render(Player player) {
+		render(player.xPos, player.yPos, player.width, player.height);
+	}
+	
+	private void render(int x, int y, int w, int h) {
 		updateGraphicsInstance();
 		clear();
 		renderBorder();

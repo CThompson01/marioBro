@@ -16,10 +16,7 @@ public class Game implements Runnable {
 	private Render render;
 	
 	// Player Momentum
-	static boolean playerRight;
-	static boolean playerLeft;
 	static boolean startJump;
-	static boolean inAir;
 	static double playerXMomentum;
 	static double playerYMomentum;
 	
@@ -28,18 +25,13 @@ public class Game implements Runnable {
 		canvas = can;
 		
 		// Creates the player
-		player1 = new Player();
+		player1 = new Player(10, 25);
 		player1.coins = 0;
-		player1.width = 10;
-		player1.height = 25;
 		player1.xPos = 25;
 		player1.yPos = canvas.getHeight() - player1.height;
 		
 		// Sets up misc variables
-		playerRight = false;
-		playerLeft = false;
 		startJump = false;
-		inAir = false;
 		playerXMomentum = 0;
 		playerYMomentum = 0;
 		ticks = 0;
@@ -49,8 +41,8 @@ public class Game implements Runnable {
 	
 	public void run() {     
 		while (running) {
-			rendering();
 			update();
+			render();
 			ticks += 1;
 			
 			try {
@@ -63,11 +55,11 @@ public class Game implements Runnable {
 	
 	public void update() {
 		// Player Momentum
-		if (playerRight && playerXMomentum < 5 && ticks % 3 == 0) {
+		if (player1.movingRight && playerXMomentum < 5 && ticks % 3 == 0) {
 			playerXMomentum += 1;
 		} else if (playerXMomentum >= 5) {
 			playerXMomentum = 5;
-		} if (playerLeft && playerXMomentum > -5 && ticks % 3 == 0) {
+		} if (player1.movingLeft && playerXMomentum > -5 && ticks % 3 == 0) {
 			playerXMomentum -= 1;
 		} else if (playerXMomentum <= -5) {
 			playerXMomentum = -5;
@@ -75,7 +67,7 @@ public class Game implements Runnable {
 		
 		if (startJump) {
 			playerYMomentum = -5;
-			inAir = true;
+			player1.inAir = true;
 			startJump = false;
 		}
 		
@@ -87,15 +79,14 @@ public class Game implements Runnable {
 				playerXMomentum += 1;
 			}
 		} if (player1.yPos < canvas.getHeight() - player1.height) {
-			System.out.println("inair");
-			inAir = true;
+			player1.inAir = true;
 			if (ticks % 5 == 0) {
 				playerYMomentum += 1;
 			}
 		} else if (player1.yPos > canvas.getHeight() - player1.height){
 			player1.yPos = canvas.getHeight() - player1.height;
 			playerYMomentum = 0;
-			inAir = false;
+			player1.inAir = false;
 		} 
 		
 		// Moving the Player
@@ -110,25 +101,25 @@ public class Game implements Runnable {
 		}
 	}
 	   
-	public void rendering() {
+	public void render() {
 		// Renders the Player
-		render.render(player1.xPos, player1.yPos, player1.width, player1.height);
+		render.render(player1);
 	}
 
 	public void keyPressed(int keycode) {
 		if (keycode == KeyEvent.VK_W) {
 			// Jump
-			if (!inAir) {
+			if (!player1.inAir) {
 				startJump = true;
 			}
 		} if (keycode == KeyEvent.VK_S) {
 			// Duck
 		} if (keycode == KeyEvent.VK_D || keycode == 39) {
 			// Right
-			playerRight = true;
+			player1.movingRight = true;
 		} if (keycode == KeyEvent.VK_A || keycode == 37) {
 			// Left
-			playerLeft = true;
+			player1.movingLeft = true;
 		}
 	}
 	
@@ -139,10 +130,10 @@ public class Game implements Runnable {
 			// Duck
 		} if (keycode == KeyEvent.VK_D || keycode == 39) {
 			// Right
-			playerRight = false;
+			player1.movingRight = false;
 		} if (keycode == KeyEvent.VK_A || keycode == 37) {
 			// Left
-			playerLeft = false;
+			player1.movingLeft = false;
 		}
 	}
 }
