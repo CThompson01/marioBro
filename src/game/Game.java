@@ -1,6 +1,7 @@
 package game;
 
 import gui.Render;
+import gui.Window;
 import game.Player;
 
 import java.awt.Canvas;
@@ -9,50 +10,39 @@ import java.awt.event.KeyEvent;
 public class Game implements Runnable {
 	
 	// Engine Variables
-	static Canvas canvas;
-	boolean running = true;
-	static Player player1;
-	static int ticks;
+	private Player player1;
+	private Render render;
+	private boolean running;
+	private int tickCount;
 	
 	// Player Momentum
-	static boolean playerRight;
-	static boolean playerLeft;
 	static boolean startJump;
-	static boolean inAir;
 	static double playerXMomentum;
 	static double playerYMomentum;
 	
-	public static void setUp(Canvas can) {
-		// Allows for access to canvas variables
-		canvas = can;
-		
+	public Game(Canvas canvas) {
 		// Creates the player
-		player1 = new Player();
-		player1.coins = 0;
-		player1.width = 10;
-		player1.height = 25;
-		player1.xPos = 25;
-		player1.yPos = canvas.getHeight() - player1.height;
+		player1 = new Player(10, 25);
+		player1.setPosition(25, canvas.getHeight() - player1.height);
 		
 		// Sets up misc variables
-		playerRight = false;
-		playerLeft = false;
+		running = true;
 		startJump = false;
-		inAir = false;
 		playerXMomentum = 0;
 		playerYMomentum = 0;
-		ticks = 0;
+		tickCount = 0;
+		
+		render = new Render(canvas);
 	}
 	
 	public void run() {     
-		while(running) {
-			rendering();
+		while (running) {
 			update();
-			ticks += 1;
+			render();
+			
 			try {
 				Thread.sleep(20);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
@@ -60,43 +50,42 @@ public class Game implements Runnable {
 	
 	public void update() {
 		// Player Momentum
-		if (playerRight && playerXMomentum < 5 && ticks % 3 == 0) {
+		if (player1.movingRight && playerXMomentum < 5 && tickCount % 3 == 0) {
 			playerXMomentum += 1;
 		} else if (playerXMomentum >= 5) {
 			playerXMomentum = 5;
-		} if (playerLeft && playerXMomentum > -5 && ticks % 3 == 0) {
+		} if (player1.movingLeft && playerXMomentum > -5 && tickCount % 3 == 0) {
 			playerXMomentum -= 1;
 		} else if (playerXMomentum <= -5) {
 			playerXMomentum = -5;
 		} 
 		
+		// Begin jumping
 		if (startJump) {
-			System.out.println("trying to jump");
 			playerYMomentum = -5;
-			inAir = true;
+			player1.inAir = true;
 			startJump = false;
 		}
 		
+		////////////////////////////////////////////////////////////////////////
 		// FizX by nuclearpheasant
-		if (ticks % 12 == 0) {
+		////////////////////////////////////////////////////////////////////////
+		if (tickCount % 12 == 0) {
 			if (playerXMomentum > 0) {
-				System.out.println("slowing on the positive side");
 				playerXMomentum -= 1;
 			} if (playerXMomentum < 0) {
-				System.out.println("slowing on the negative side");
 				playerXMomentum += 1;
 			}
-		} if (player1.yPos < canvas.getHeight() - player1.height) {
-			System.out.println("inair");
-			inAir = true;
-			if (ticks % 5 == 0) {
+		} if (player1.yPos < Window.CANVAS_HEIGHT - player1.height) {
+			player1.inAir = true;
+			if (tickCount % 5 == 0) {
 				playerYMomentum += 1;
 			}
-		} else if (player1.yPos > canvas.getHeight() - player1.height){
-			player1.yPos = canvas.getHeight() - player1.height;
+		} else if (player1.yPos > Window.CANVAS_HEIGHT - player1.height){
+			player1.yPos = Window.CANVAS_HEIGHT - player1.height;
 			playerYMomentum = 0;
-			inAir = false;
-		} 
+			player1.inAir = false;
+		}
 		
 		// Moving the Player
 		player1.xPos += playerXMomentum;
@@ -105,46 +94,47 @@ public class Game implements Runnable {
 		// Check player contact
 		if (player1.xPos <= 0) {
 			player1.xPos = 0;
-		} else if (player1.xPos >= canvas.getWidth() - player1.width) {
-			player1.xPos = canvas.getWidth() - player1.width;
+		} else if (player1.xPos >= Window.CANVAS_WIDTH - player1.width) {
+			player1.xPos = Window.CANVAS_WIDTH - player1.width;
 		}
+		
+		// Update ticks
+		tickCount += 1;
 	}
 	   
-	public void rendering() {
+	public void render() {
 		// Renders the Player
-		Render.render(player1.xPos, player1.yPos, player1.width, player1.height);
+		render.render(player1);
 	}
 
-	public static void keyPressed(int keycode) {
-		System.out.println("keyPressed sent to game class");
+	public void keyPressed(int keycode) {
 		if (keycode == KeyEvent.VK_W) {
 			// Jump
-			if (!inAir) {
+			if (!player1.inAir) {
 				startJump = true;
 			}
 		} if (keycode == KeyEvent.VK_S) {
 			// Duck
 		} if (keycode == KeyEvent.VK_D || keycode == 39) {
 			// Right
-			playerRight = true;
+			player1.movingRight = true;
 		} if (keycode == KeyEvent.VK_A || keycode == 37) {
 			// Left
-			playerLeft = true;
+			player1.movingLeft = true;
 		}
 	}
 	
-	public static void keyReleased(int keycode) {
-		// TODO Auto-generated method stub
+	public void keyReleased(int keycode) {
 		if (keycode == KeyEvent.VK_W) {
 			// Jump
 		} if (keycode == KeyEvent.VK_S) {
 			// Duck
 		} if (keycode == KeyEvent.VK_D || keycode == 39) {
 			// Right
-			playerRight = false;
+			player1.movingRight = false;
 		} if (keycode == KeyEvent.VK_A || keycode == 37) {
 			// Left
-			playerLeft = false;
+			player1.movingLeft = false;
 		}
 	}
 }
