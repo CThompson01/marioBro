@@ -25,6 +25,8 @@ public class Game implements Runnable {
 		player1 = new Player(10, 25);
 		player1.setPosition(25, canvas.getHeight() - player1.height);
 		
+		
+		
 		// Sets up misc variables
 		running = true;
 		startJump = false;
@@ -104,7 +106,7 @@ public class Game implements Runnable {
 	   
 	public void render() {
 		// Renders the Player
-		render.render(player1);
+		render.renderPlayer(player1);
 	}
 
 	public void keyPressed(int keycode) {
