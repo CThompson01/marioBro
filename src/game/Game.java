@@ -11,6 +11,7 @@ public class Game implements Runnable {
 	
 	// Engine Variables
 	private Player player1;
+	private Block block1;
 	private Render render;
 	private boolean running;
 	private int tickCount;
@@ -25,7 +26,7 @@ public class Game implements Runnable {
 		player1 = new Player(10, 25);
 		player1.setPosition(25, canvas.getHeight() - player1.height);
 		
-		
+		block1 = Levels.levelOne(canvas);
 		
 		// Sets up misc variables
 		running = true;
@@ -60,7 +61,7 @@ public class Game implements Runnable {
 			playerXMomentum -= 1;
 		} else if (playerXMomentum <= -5) {
 			playerXMomentum = -5;
-		} 
+		}
 		
 		// Begin jumping
 		if (startJump) {
@@ -78,16 +79,30 @@ public class Game implements Runnable {
 			} if (playerXMomentum < 0) {
 				playerXMomentum += 1;
 			}
-		} if (player1.yPos < Window.CANVAS_HEIGHT - player1.height) {
-			player1.inAir = true;
-			if (tickCount % 5 == 0) {
-				playerYMomentum += 1;
+		} if (player1.crouch) {
+			if (player1.yPos < Window.CANVAS_HEIGHT - player1.crouchHeight) {
+				player1.inAir = true;
+				if (tickCount % 5 == 0) {
+					playerYMomentum += 1;
+				}
+			} else if (player1.yPos > Window.CANVAS_HEIGHT - player1.crouchHeight){
+				player1.yPos = Window.CANVAS_HEIGHT - player1.crouchHeight;
+				playerYMomentum = 0;
+				player1.inAir = false;
 			}
-		} else if (player1.yPos > Window.CANVAS_HEIGHT - player1.height){
-			player1.yPos = Window.CANVAS_HEIGHT - player1.height;
-			playerYMomentum = 0;
-			player1.inAir = false;
+		} else {
+			if (player1.yPos < Window.CANVAS_HEIGHT - player1.height) {
+				player1.inAir = true;
+				if (tickCount % 5 == 0) {
+					playerYMomentum += 1;
+				}
+			} else if (player1.yPos > Window.CANVAS_HEIGHT - player1.height){
+				player1.yPos = Window.CANVAS_HEIGHT - player1.height;
+				playerYMomentum = 0;
+				player1.inAir = false;
+			}
 		}
+
 		
 		// Moving the Player
 		player1.xPos += playerXMomentum;
@@ -105,8 +120,17 @@ public class Game implements Runnable {
 	}
 	   
 	public void render() {
+		render.clear();
+		
 		// Renders the Player
-		render.renderPlayer(player1);
+		if (player1.crouch) {
+			render.renderPlayer(player1);
+		} else {
+			render.renderPlayer(player1);
+		}
+		
+		// Renders the blocks
+		render.renderObjects(block1);
 	}
 
 	public void keyPressed(int keycode) {
@@ -117,6 +141,8 @@ public class Game implements Runnable {
 			}
 		} if (keycode == KeyEvent.VK_S) {
 			// Duck
+			player1.crouch = true;
+			player1.yPos += 12;
 		} if (keycode == KeyEvent.VK_D || keycode == 39) {
 			// Right
 			player1.movingRight = true;
@@ -131,6 +157,8 @@ public class Game implements Runnable {
 			// Jump
 		} if (keycode == KeyEvent.VK_S) {
 			// Duck
+			player1.crouch = false;
+			player1.yPos -= 12;
 		} if (keycode == KeyEvent.VK_D || keycode == 39) {
 			// Right
 			player1.movingRight = false;

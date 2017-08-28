@@ -1,13 +1,14 @@
 package game;
 
 public class Player {
-	public int xPos, yPos, width, height, coins;
-	public boolean movingLeft, movingRight, inAir;
+	public int xPos, yPos, width, height, crouchHeight, coins;
+	public boolean movingLeft, movingRight, inAir, crouch;
 	
 	private Player() {
 		movingLeft = false; 
 		movingRight = false;
 		inAir = false;
+		crouch = false;
 		coins = 0;
 	}
 	
@@ -15,6 +16,7 @@ public class Player {
 		this();
 		width = w;
 		height = h;
+		crouchHeight = height /2;
 	}
 	
 	public void setPosition(int x, int y) {

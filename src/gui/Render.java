@@ -18,16 +18,19 @@ public class Render {
 	}
 	
 	public void renderPlayer(Player player) {
-		render(player.xPos, player.yPos, player.width, player.height);
+		if (player.crouch) {
+			render(player.xPos, player.yPos, player.width, player.height /2);
+		} else {
+			render(player.xPos, player.yPos, player.width, player.height);
+		}
 	}
 	
 	public void renderObjects(Block block) {
-		//placeholder
+		render(block.xPos, block.yPos, block.width, block.height);
 	}
 	
 	private void render(int x, int y, int w, int h) {
 		updateGraphicsInstance();
-		clear();
 		renderBorder();
 		graphics.fillRect(x, y, w, h);
 		graphics.dispose();
@@ -38,7 +41,8 @@ public class Render {
 		graphics = (Graphics2D)bufferStrategy.getDrawGraphics();
 	}
 	
-	private void clear() {
+	public void clear() {
+		updateGraphicsInstance();
 		graphics.clearRect(0, 0, canvas.getWidth(), canvas.getHeight());
 	}
 	
