@@ -9,12 +9,17 @@ import java.awt.event.KeyEvent;
 
 public class Game implements Runnable {
 	
+	///////////////////////////////////////
+	// Fix the messy and dumb code later //
+	///////////////////////////////////////
+	
 	// Engine Variables
 	private Player player1;
 	private Block block1;
 	private Render render;
 	private boolean running;
 	private int tickCount;
+	private boolean shouldfiz;
 	
 	// Player Momentum
 	static boolean startJump;
@@ -57,7 +62,8 @@ public class Game implements Runnable {
 			playerXMomentum += 1;
 		} else if (playerXMomentum >= 5) {
 			playerXMomentum = 5;
-		} if (player1.movingLeft && playerXMomentum > -5 && tickCount % 3 == 0) {
+		}
+		if (player1.movingLeft && playerXMomentum > -5 && tickCount % 3 == 0) {
 			playerXMomentum -= 1;
 		} else if (playerXMomentum <= -5) {
 			playerXMomentum = -5;
@@ -79,30 +85,42 @@ public class Game implements Runnable {
 			} if (playerXMomentum < 0) {
 				playerXMomentum += 1;
 			}
-		} if (player1.crouch) {
-			if (player1.yPos < Window.CANVAS_HEIGHT - player1.crouchHeight) {
-				player1.inAir = true;
-				if (tickCount % 5 == 0) {
-					playerYMomentum += 1;
+		} if (shouldfiz) {
+			if (player1.crouch) {
+				if (player1.yPos < Window.CANVAS_HEIGHT - player1.crouchHeight) {
+					player1.inAir = true;
+					if (tickCount % 5 == 0) {
+						playerYMomentum += 1;
+					}
+				} else if (player1.yPos > Window.CANVAS_HEIGHT - player1.crouchHeight){
+					player1.yPos = Window.CANVAS_HEIGHT - player1.crouchHeight;
+					playerYMomentum = 0;
+					player1.inAir = false;
 				}
-			} else if (player1.yPos > Window.CANVAS_HEIGHT - player1.crouchHeight){
-				player1.yPos = Window.CANVAS_HEIGHT - player1.crouchHeight;
-				playerYMomentum = 0;
-				player1.inAir = false;
-			}
-		} else {
-			if (player1.yPos < Window.CANVAS_HEIGHT - player1.height) {
-				player1.inAir = true;
-				if (tickCount % 5 == 0) {
-					playerYMomentum += 1;
+			} else {
+				if (player1.yPos < Window.CANVAS_HEIGHT - player1.height) {
+					player1.inAir = true;
+					if (tickCount % 5 == 0) {
+						playerYMomentum += 1;
+					}
+				} else if (player1.yPos > Window.CANVAS_HEIGHT - player1.height){
+					player1.yPos = Window.CANVAS_HEIGHT - player1.height;
+					playerYMomentum = 0;
+					player1.inAir = false;
 				}
-			} else if (player1.yPos > Window.CANVAS_HEIGHT - player1.height){
-				player1.yPos = Window.CANVAS_HEIGHT - player1.height;
-				playerYMomentum = 0;
-				player1.inAir = false;
 			}
 		}
-
+		
+		if (player1.yPos + player1.height <= block1.yPos + 1 && 
+			player1.yPos + player1.height >= block1.yPos - 1 &&
+			checkXCollision(player1, block1)) {
+			playerYMomentum = 0;
+			player1.yPos = block1.yPos - player1.height;
+			shouldfiz = false;
+		} else {
+			shouldfiz = true;
+		}
+			
 		
 		// Moving the Player
 		player1.xPos += playerXMomentum;
@@ -132,13 +150,27 @@ public class Game implements Runnable {
 		// Renders the blocks
 		render.renderObjects(block1);
 	}
-
+	
+	/*
+	 * fix this in a later commit, right now im just being lazy
+	 */
+	public boolean checkXCollision(Player player, Block block) {
+		if (player.xPos + player.width > block.xPos -1 && 
+			player.xPos < block.xPos + block.width) {
+			return true;
+		}
+		return false;
+	}
+	
 	public void keyPressed(int keycode) {
 		if (keycode == KeyEvent.VK_W) {
 			// Jump
 			if (!player1.inAir) {
 				startJump = true;
 			}
+		} if (keycode == KeyEvent.VK_Y) {
+			// Player jump override
+			playerYMomentum -= 3;
 		} if (keycode == KeyEvent.VK_S) {
 			// Duck
 			player1.crouch = true;
