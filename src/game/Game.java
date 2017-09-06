@@ -19,7 +19,6 @@ public class Game implements Runnable {
 	private Render render;
 	private boolean running;
 	private int tickCount;
-	private boolean shouldfiz;
 	
 	// Player Momentum
 	static boolean startJump;
@@ -71,6 +70,7 @@ public class Game implements Runnable {
 		
 		// Begin jumping
 		if (startJump) {
+			System.out.println("Jumping");
 			playerYMomentum = -5;
 			player1.inAir = true;
 			startJump = false;
@@ -85,42 +85,32 @@ public class Game implements Runnable {
 			} if (playerXMomentum < 0) {
 				playerXMomentum += 1;
 			}
-		} if (shouldfiz) {
-			if (player1.crouch) {
-				if (player1.yPos < Window.CANVAS_HEIGHT - player1.crouchHeight) {
-					player1.inAir = true;
-					if (tickCount % 5 == 0) {
-						playerYMomentum += 1;
-					}
-				} else if (player1.yPos > Window.CANVAS_HEIGHT - player1.crouchHeight){
-					player1.yPos = Window.CANVAS_HEIGHT - player1.crouchHeight;
-					playerYMomentum = 0;
-					player1.inAir = false;
+		}
+		if (player1.crouch) {
+			if (player1.yPos < Window.CANVAS_HEIGHT - player1.crouchHeight) {
+				player1.inAir = true;
+				if (tickCount % 5 == 0) {
+					playerYMomentum += 1;
 				}
-			} else {
-				if (player1.yPos < Window.CANVAS_HEIGHT - player1.height) {
-					player1.inAir = true;
-					if (tickCount % 5 == 0) {
-						playerYMomentum += 1;
-					}
-				} else if (player1.yPos > Window.CANVAS_HEIGHT - player1.height){
-					player1.yPos = Window.CANVAS_HEIGHT - player1.height;
-					playerYMomentum = 0;
-					player1.inAir = false;
+			} else if (player1.yPos > Window.CANVAS_HEIGHT - player1.crouchHeight){
+				player1.yPos = Window.CANVAS_HEIGHT - player1.crouchHeight;
+				playerYMomentum = 0;
+				player1.inAir = false;
+			}
+		} else {
+			if (player1.yPos < Window.CANVAS_HEIGHT - player1.height) {
+				player1.inAir = true;
+				if (tickCount % 5 == 0) {
+					playerYMomentum += 1;
 				}
+			} else if (player1.yPos > Window.CANVAS_HEIGHT - player1.height){
+				player1.yPos = Window.CANVAS_HEIGHT - player1.height;
+				playerYMomentum = 0;
+				player1.inAir = false;
 			}
 		}
-		
-		if (player1.yPos + player1.height <= block1.yPos + 1 && 
-			player1.yPos + player1.height >= block1.yPos - 1 &&
-			checkXCollision(player1, block1)) {
-			playerYMomentum = 0;
-			player1.yPos = block1.yPos - player1.height;
-			shouldfiz = false;
-		} else {
-			shouldfiz = true;
-		}
 			
+		
 		
 		// Moving the Player
 		player1.xPos += playerXMomentum;
@@ -141,11 +131,7 @@ public class Game implements Runnable {
 		render.clear();
 		
 		// Renders the Player
-		if (player1.crouch) {
-			render.renderPlayer(player1);
-		} else {
-			render.renderPlayer(player1);
-		}
+		render.renderPlayer(player1);
 		
 		// Renders the blocks
 		render.renderObjects(block1);
@@ -161,6 +147,12 @@ public class Game implements Runnable {
 		}
 		return false;
 	}
+	
+	
+	
+	/*
+	 * stop fixing in later commit
+	 */
 	
 	public void keyPressed(int keycode) {
 		if (keycode == KeyEvent.VK_W) {

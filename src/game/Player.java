@@ -2,12 +2,13 @@ package game;
 
 public class Player {
 	public int xPos, yPos, width, height, crouchHeight, coins;
-	public boolean movingLeft, movingRight, inAir, crouch;
+	public boolean movingLeft, movingRight, inAir, onGround, crouch;
 	
 	private Player() {
 		movingLeft = false; 
 		movingRight = false;
 		inAir = false;
+		onGround = true;
 		crouch = false;
 		coins = 0;
 	}
